@@ -25,12 +25,13 @@ def create():
 
 @app.route('/notes/delete', methods=['post'])
 def delete():
-    query = "DELETE FROM notes WHERE id = :id"
-    data = {'id':request.form['id']}
-    print data
     print request.form['id']
-    delid = mysql.query_db(query, data)
-    return jsonify(delid)
+    query = "DELETE FROM notes WHERE id = :id"
+    ddata = {'id':request.form['id']}
+    mysql.query_db(query, ddata)
+    notes = mysql.query_db("SELECT * FROM notes")
+    print notes
+    return jsonify(notes)
 
 if __name__ == "__main__":
     app.run(debug=True)

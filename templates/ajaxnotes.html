@@ -15,9 +15,9 @@
                 $.ajax({
                     method: 'GET',
                     url: '/notes',
-                    success: function(posts){
-                        $.each(posts, function(i,note){
-                            $posts.append('<div id="' + note.id + '" class="post"><h3>' + note.title + '</h3><form class="delete" action="/notes/delete" method="post"><input type="hidden" name="id" value=' + note.id +'><input type="submit" name="delete" value="Delete"></form><p>' + note.content + '</p></div>')
+                    success: function(psts){
+                        $.each(psts, function(i,note){
+                            $('#posts').append('<div id="' + note.id + '" class="post"><h3>' + note.title + '</h3><form class="delete" action="/notes" method="post"><input type="hidden" name="id" value=' + note.id +'><input type="submit" name="delete" value="Delete"></form><p>' + note.content + '</p></div>')
                         })
                     },
                 });
@@ -37,40 +37,35 @@
                         url: '/notes/create',
                         data:jnote,
                         success:function(note){
-                            console.log('I got this far');
-                            console.log(note);
-                            $posts.append('<div id="' + note[0].id + '" class="post"><h3>' + note[0].title + '</h3><form class="delete" action="/notes/delete" method="post"><input type="hidden" name="id" value=' + note[0].id +'><input type="submit" name="delete" value="Delete"></form><p>' + note[0].content + '</p></div>')
+                            $('#posts').append('<div id="' + note[0].id + '" class="post"><h3>' + note[0].title + '</h3><form class="delete" action="/notes" method="post"><input type="hidden" name="id" value=' + note[0].id +'><input type="submit" name="delete" value="Delete"></form><p>' + note[0].content + '</p></div>')
                         },
                     });
                 })
 
-                $('form.delete').on("click", function(event){
+                $('#posts').on("submit","form", function(){
                     var del_form = $( this ).serializeArray();
-                    event.preventDefault();
-                    console.log(del_form);
-
                     var jdel = {
-                        id:del_form[0]['value'],
+                        id: del_form[0]['value']
                     }
-
                     $.ajax({
                         method: 'POST',
                         url: '/notes/delete',
-                        data:jdel,
-                        success:function(note){
-                            console.log('I got this far on delete');
-                            console.log(note);
+                        data: jdel,
+                        success:function(psts){
+                            $('#posts').html('');
+                            $.each(psts, function(i,note){
+                                $('#posts').append('<div id="' + note.id + '" class="post"><h3>' + note.title + '</h3><form class="delete" action="/notes" method="post"><input type="hidden" name="id" value=' + note.id +'><input type="submit" name="delete" value="Delete"></form><p>' + note.content + '</p></div>')
+                            })
                         },
                     });
+                    return false;
                 });
-
             })
         </script>
     </head>
     <body id="main">
-        <div id="posts">
-            <h3>My Notes</h3>
-        </div>
+        <h3>My Notes</h3>
+        <div id="posts"></div>
         <form class="newnote" action="/notes/create" method="post">
             <input type="text" name="title" value="add title"><br>
             Note:<br>
